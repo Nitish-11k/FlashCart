@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 
 /* ── Scroll-reveal hook ─────────────────────────────────────────────────── */
 function useScrollReveal() {
