@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0b0d10] text-slate-100 font-sans antialiased selection:bg-[#FF3B60] selection:text-white;
+  }
+}
+
+/* Watermelon Glow & Pulse Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 59, 96, 0.2), 0 0 30px rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 59, 96, 0.4), 0 0 45px rgba(16, 185, 129, 0.25);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-watermelon-glow {
+  animation: pulse-glow 4s infinite ease-in-out;
+}
+
+.animate-float {
+  animation: float-slow 3s infinite ease-in-out;
+}
