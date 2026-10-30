@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 /* ── Scroll-reveal hook ─────────────────────────────────────────────────── */
 function useScrollReveal() {
@@ -278,16 +278,9 @@ function SampleCard() {
   )
 }
 
-function DealCard({ deal, onOpen, index = 0 }: { deal: Deal; onOpen: () => void; index?: number }) {
+function DealCard({ deal, onOpen }: { deal: Deal; onOpen: () => void }) {
   return (
-    <article
-      className="deal-card"
-      onClick={onOpen}
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onOpen()}
-      data-reveal
-      style={{ '--reveal-delay': `${index * 0.07}s` } as React.CSSProperties}
-    >
+    <article className="deal-card" onClick={onOpen} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onOpen()}>
       <div className="product-image">
         <img src={deal.image} alt="" style={{ objectPosition: deal.position }} />
         <span className="category">{deal.category}</span>
@@ -301,12 +294,7 @@ function DealCard({ deal, onOpen, index = 0 }: { deal: Deal; onOpen: () => void;
           <div><strong>{deal.price}</strong><p><s>{deal.list}</s> · Store says {deal.claim}% off</p></div>
           <div className={deal.verdict === 'Inflated' ? 'bad-text' : 'good-text'}><strong>{deal.real}%</strong><p>real drop</p></div>
         </div>
-        <div className="trust-row">
-          <span>Seller trust</span>
-          <div className="mini-bar"><i className="trust-fill" style={{ '--trust': `${deal.trust}%` } as React.CSSProperties} /></div>
-          <b>{deal.trust}</b>
-          <Icon name="arrow" size={16} />
-        </div>
+        <div className="trust-row"><span>Seller trust</span><div className="mini-bar"><i style={{ width: `${deal.trust}%` }} /></div><b>{deal.trust}</b><Icon name="arrow" size={16} /></div>
       </div>
     </article>
   )
@@ -367,8 +355,6 @@ function SectionTitle({ children, muted }: { children: React.ReactNode; muted?: 
 }
 
 export default function App() {
-  useScrollReveal()
-  useCounters()
   const [filter, setFilter] = useState<'All deals' | Verdict>('All deals')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Deal | null>(null)
@@ -377,11 +363,6 @@ export default function App() {
   const [syncing, setSyncing] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [latencyMs, setLatencyMs] = useState('0.7')
-  useEffect(() => {
-    const t = setInterval(() => setLatencyMs((+(0.4 + Math.random() * 0.7)).toFixed(1)), 2800)
-    return () => clearInterval(t)
-  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrollProgress((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)
@@ -429,10 +410,10 @@ export default function App() {
       <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
       <header className="nav">
         <div className="nav-inner">
-          <button className="logo-button" onClick={() => scrollTo('home')}><Logo animated /></button>
+          <button className="logo-button" onClick={() => scrollTo('home')}><Logo /></button>
           <nav>{navItems.map(([label, id], i) => <button className={i === 0 ? 'active' : ''} key={id} onClick={() => scrollTo(id)}>{label}</button>)}</nav>
           <div className="nav-actions">
-            <span className="live-status"><i />Live · <span className="latency-val">{latencyMs}</span> ms</span>
+            <span className="live-status"><i />Live · 0.7 ms</span>
             <Button onClick={sync} className={syncing ? 'syncing' : ''}><Icon name="sync" size={17} />{syncing ? 'Syncing' : 'Sync prices'}</Button>
             <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Icon name="menu" /></button>
           </div>
@@ -480,21 +461,9 @@ export default function App() {
                 ['Finds the real discount', 'Today’s price is measured against what the product actually cost last month.'],
                 ['Scores the seller', 'Seller age, price stability and honest list prices all count.'],
                 ['Alerts you at the right time', 'Set your target once. We’ll tell you when the drop is genuinely worth it.'],
-              ].map(([title, copy], i) => (
-                <div
-                  className="timeline-step"
-                  key={title}
-                  data-reveal
-                  style={{ '--reveal-delay': `${i * 0.12}s` } as React.CSSProperties}
-                >
-                  <span className="step-number">0{i + 1}</span>
-                  <div>
-                    <h3>{title}</h3>
-                    <p>{copy}</p>
-                    {i === 1 && <div className="formula">Real discount <b>= 1 − sale price ÷ 30-day average</b></div>}
-                  </div>
-                </div>
-              ))}
+              ].map(([title, copy], i) => <div className="timeline-step" key={title}>
+                <span className="step-number">0{i + 1}</span><div><h3>{title}</h3><p>{copy}</p>{i === 1 && <div className="formula">Real discount <b>= 1 − sale price ÷ 30-day average</b></div>}</div>
+              </div>)}
             </div>
           </div>
         </section>
@@ -526,19 +495,13 @@ export default function App() {
                 <div><span>Real discount over 15%</span><VerdictChip verdict="Verified low" /></div>
               </div>
             </div>
-            <div className="score-card" data-reveal>
+            <div className="score-card">
               <div className="score-top"><div><span>Seller trust</span><b>82</b><small>/ 100</small></div><span className="score-grade">Strong</span></div>
               {[
                 ['Seller age', '30%', 'A longer, traceable selling history', 78],
                 ['Price stability', '40%', 'Fewer suspicious jumps before sales', 91],
                 ['Honest list price', '30%', 'List price matches its usual range', 72],
-              ].map(([label, weight, copy, width], si) => (
-                <div className="score-row" key={label as string} data-reveal style={{ '--reveal-delay': `${si * 0.14}s` } as React.CSSProperties}>
-                  <div><b>{label}</b><span>{weight}</span></div>
-                  <p>{copy}</p>
-                  <div className="score-bar"><i className="score-fill" style={{ '--bar-width': `${width}%` } as React.CSSProperties} /></div>
-                </div>
-              ))}
+              ].map(([label, weight, copy, width]) => <div className="score-row" key={label as string}><div><b>{label}</b><span>{weight}</span></div><p>{copy}</p><div className="score-bar"><i style={{ width: `${width}%` }} /></div></div>)}
             </div>
           </div>
         </section>
@@ -550,9 +513,9 @@ export default function App() {
           </div>
           <p className="sample-disclaimer">Sample review content for layout preview. Replace with verified customer reviews before launch.</p>
           <div className="review-grid">
-            <article className="review-card featured" data-reveal style={{ '--reveal-delay': '0s' } as React.CSSProperties}><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“I saw 60% off. FlashCart Pulse showed the real drop was only 2%—so I waited.”</blockquote><div className="review-person"><span>A</span><div><b>Aarav</b><small>Pune · Smartwatch</small></div></div><p className="result">Saved ₹3,000 by skipping an inflated deal</p></article>
-            <article className="review-card" data-reveal style={{ '--reveal-delay': '0.1s' } as React.CSSProperties}><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“The seller trust score made me skip a store that had only been online for two weeks.”</blockquote><div className="review-person"><span>M</span><div><b>Meera</b><small>Jaipur · Headphones</small></div></div><p className="result">Avoided a low-trust seller</p></article>
-            <article className="review-card" data-reveal style={{ '--reveal-delay': '0.2s' } as React.CSSProperties}><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“I set an alert and got the email when the price actually dropped.”</blockquote><div className="review-person"><span>R</span><div><b>Rohan</b><small>Bengaluru · Earbuds</small></div></div><p className="result">Bought at a verified low</p></article>
+            <article className="review-card featured"><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“I saw 60% off. FlashCart Pulse showed the real drop was only 2%—so I waited.”</blockquote><div className="review-person"><span>A</span><div><b>Aarav</b><small>Pune · Smartwatch</small></div></div><p className="result">Saved ₹3,000 by skipping an inflated deal</p></article>
+            <article className="review-card"><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“The seller trust score made me skip a store that had only been online for two weeks.”</blockquote><div className="review-person"><span>M</span><div><b>Meera</b><small>Jaipur · Headphones</small></div></div><p className="result">Avoided a low-trust seller</p></article>
+            <article className="review-card"><span className="verified"><Icon name="check" size={12} />Verified user · sample</span><blockquote>“I set an alert and got the email when the price actually dropped.”</blockquote><div className="review-person"><span>R</span><div><b>Rohan</b><small>Bengaluru · Earbuds</small></div></div><p className="result">Bought at a verified low</p></article>
           </div>
         </section>
 
