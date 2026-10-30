@@ -355,6 +355,8 @@ function SectionTitle({ children, muted }: { children: React.ReactNode; muted?: 
 }
 
 export default function App() {
+  useScrollReveal();
+  useCounters();
   const [filter, setFilter] = useState<'All deals' | Verdict>('All deals')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Deal | null>(null)
